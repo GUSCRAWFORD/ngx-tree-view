@@ -1,0 +1,20 @@
+<div>
+  <div *ngFor="let node of nodes; index as i">
+        <div (click)="nodeClick(node, $event)" class="tree-view" [ngClass]="{active:hotNode===i}">
+            <div class="node-handle">
+              <span [hidden]="!(node && node[options.map.children] && !node.$expanded)">
+                <span class="{{(options&&options.glyphs&&options.glyphs.fontLibrary&&options.glyphs.expandGlyph)?(options.glyphs.fontLibrary+' '+options.glyphs.expandGlyph):'tree-view-expand '}}"></span>
+              </span>
+              <span [hidden]="!(node && node[options.map.children] && node.$expanded)">
+                <span class="{{(options&&options.glyphs&&options.glyphs.fontLibrary&&options.glyphs.collapseGlyph)?(options.glyphs.fontLibrary+' '+options.glyphs.collapseGlyph):'tree-view-collapse'}}"></span>
+              </span>
+              <span [hidden]="!(node && !node[options.map.children])">
+                <span class="{{options&&options.glyphs&&options.glyphs.fontLibrary&&(node.$glyph||options.glyphs.childGlpyh)?options.fontLibrary+' '+(node && node.$glpyh?node.$glyph:options.glyphs.childGlpyh):'tree-view-child'}}"></span>
+              </span>
+            </div>
+              <input type="checkbox" [hidden]="!options.select" [checked]="(node && node.$selected) || (options.select==='leaves'?groupIsSelected(node)===GroupSelection.All:false)" (click)="checkboxClick(node, i, $event);" [indeterminate]="options.select==='leaves'?groupIsSelected(node)===GroupSelection.Some:null" #checkbox>
+              {{node && node[options.map.value]}}
+            <tree-view *ngIf="node && node[options.map.children]" [nodes]="node[options.map.children]" [hidden]="!node.$expanded" [options]="options" (selectionChange)="onChildrenSelected($event)" (expansionChange)="onChildrenExpanded($event)" [depth]="depth+1"></tree-view>
+        </div>
+  </div>
+</div>
