@@ -166,7 +166,7 @@ export class TreeViewComponent implements OnChanges {
   checkboxClick(node, index, $event) {
     $event.cancelBubble = true;
     if (node[this.options.map.children] && this.options.select==='leaves') {
-      this.selectAll(node[this.options.map.children], this.groupIsSelected(node)!==GroupSelection.All);
+      this.selectAll(node[this.options.map.children], !node.$selected);
     }
     this.select(node, $event);
   }
