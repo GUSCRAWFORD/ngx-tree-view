@@ -1,5 +1,5 @@
 import {
-  Component, OnInit,
+  Component, OnChanges,
   Input, Output,
   EventEmitter,
   ViewChild, TemplateRef, ViewChildren,
@@ -57,7 +57,7 @@ export enum GroupSelection {
   templateUrl: './tree-view.component.html',
   styleUrls: ['./tree-view.component.css']
 })
-export class TreeViewComponent implements OnInit {
+export class TreeViewComponent implements OnChanges {
 
   constructor(
     private cd: ChangeDetectorRef
@@ -65,6 +65,8 @@ export class TreeViewComponent implements OnInit {
 
   GroupSelection = GroupSelection;
 
+  @Input()
+  metadata;
   @Input()
   nodes = [];
   @ViewChildren('checkbox')
@@ -169,7 +171,7 @@ export class TreeViewComponent implements OnInit {
     this.select(node, $event);
   }
 
-  ngOnInit() {
+  ngOnChanges() {
     if (!this.options.map) this.options.map = {
       children:'children',
       value:'name'
@@ -178,6 +180,23 @@ export class TreeViewComponent implements OnInit {
     if (this.options.expanded && this.depth < this.options.expanded) {
       this.nodes.forEach(node=>{
         node.$expanded = true;
+      });
+    }
+    this.scaffoldMetadata();
+  }
+  scaffoldMetadata() {
+    if (this.root) {
+      this.metadata = {};
+      var scaffoldMetadata = (node, metadataNode, index, depth)=>{
+        metadataNode[depth+'.'+index] = {};
+        if (node[this.options.map.children]) {
+          node[this.options.map.children].forEach((childNode, i)=>{
+            scaffoldMetadata(childNode, metadataNode, i, depth+1);
+          });
+        }
+      };
+      this.nodes.forEach((node, i)=>{
+        scaffoldMetadata(node, this.metadata, i, this.depth);
       });
     }
   }

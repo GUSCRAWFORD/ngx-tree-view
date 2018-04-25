@@ -1,4 +1,7 @@
 
+.tree-view {
+    cursor: pointer;
+}
 .tree-view .tree-view{
     /*background-color: rgba(255,0,0,0.1);*/
     padding-left:15px;
@@ -11,6 +14,7 @@
 } */
 .tree-view input {
     vertical-align: middle;
+    cursor:default;
 }
 
 .tree-view .node-handle {
