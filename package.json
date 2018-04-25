@@ -24,6 +24,6 @@
     "ngx-tree-view"
   ],
   "devDependencies": {
-    "@angular/core": "5.2.10"
+    "@angular/core": "4.3.6"
   }
 }

@@ -15,6 +15,7 @@
 .tree-view input {
     vertical-align: middle;
     cursor:default;
+    margin:none;
 }
 
 .tree-view .node-handle {
