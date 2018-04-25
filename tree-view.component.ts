@@ -81,11 +81,13 @@ export class TreeViewComponent implements OnInit {
   template:TemplateRef<any>;
   @Input()
   depth: number = 0;
+  @Input()
+  root = true;
 
   selectAll(nodes, val = true) {
     if (!nodes) nodes = this.nodes;
     nodes.forEach(node=>{
-      if (!node[this.options.map.children]) node.$selected = val;
+      node.$selected = val;
       if (node && node[this.options.map.children] && node[this.options.map.children].length)
         this.selectAll(node[this.options.map.children], val);
     });
@@ -148,8 +150,10 @@ export class TreeViewComponent implements OnInit {
   onChildrenExpanded(node) {
     this.expansionChange.emit(node);
   }
-  onChildrenSelected(selections) {
-    this.selectionChange.emit(this.filterSelections());
+  onChildrenSelected($event) {
+    if (this.root)
+      this.selectionChange.emit(this.filterSelections());
+    else this.selectionChange.emit($event);
   }
   nodeClick(node, $event) {
     if (!this.expand(node, $event))
@@ -170,10 +174,11 @@ export class TreeViewComponent implements OnInit {
       children:'children',
       value:'name'
     }
+
     if (this.options.expanded && this.depth < this.options.expanded) {
       this.nodes.forEach(node=>{
         node.$expanded = true;
-      })
+      });
     }
   }
 }
