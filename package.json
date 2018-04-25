@@ -11,9 +11,15 @@
     "url": "git+https://github.com/GUSCRAWFORD/ngx-tree-view.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/GUSCRAWFORD/ngx-tree-view/issues"
   },
-  "homepage": "https://github.com/GUSCRAWFORD/ngx-tree-view#readme"
+  "homepage": "https://github.com/GUSCRAWFORD/ngx-tree-view#readme",
+  "keywords": [
+    "tree","tree-view","angular","tree-view","ngx-tree-view"
+  ],
+  "devDependencies": {
+    "@angular/core":"5.2.10"
+  }
 }

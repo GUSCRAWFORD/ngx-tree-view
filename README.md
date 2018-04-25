@@ -74,7 +74,7 @@ export class AppComponent {
 <tree-view [nodes]="data" [options]="options" (selectionChange)="selections = $event"></tree-view>
 ```
 
-** app.component.ts**
+**app.component.ts**
 
 ```
 import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ngx-tree-view';
@@ -177,7 +177,7 @@ export class AppComponent {
 <tree-view [nodes]="data" (expansionChange)="onExpand($event)"></tree-view>
 ```
 
-** app.component.ts**
+**app.component.ts**
 
 ```
 import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ngx-tree-view';
