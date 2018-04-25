@@ -1,5 +1,9 @@
 
 .tree-view {
+    cursor: default;
+}
+.tree-view .node-text {
+
     cursor: pointer;
 }
 .tree-view .tree-view{
