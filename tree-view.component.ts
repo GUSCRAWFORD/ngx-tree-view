@@ -85,7 +85,7 @@ export class TreeViewComponent implements OnInit {
   selectAll(nodes, val = true) {
     if (!nodes) nodes = this.nodes;
     nodes.forEach(node=>{
-      if (!node[this.options.map.children] || this.options.select === 'all') node.$selected = val;
+      if (!node[this.options.map.children]) node.$selected = val;
       if (node && node[this.options.map.children] && node[this.options.map.children].length)
         this.selectAll(node[this.options.map.children], val);
     });
@@ -94,7 +94,7 @@ export class TreeViewComponent implements OnInit {
     var selections = [];
     if (!nodes) nodes = this.nodes;
     nodes.forEach(node=>{
-      if (node.$selected) selections.push(node);
+      if (node.$selected && (this.options.select==='all' || !node[this.options.map.children])) selections.push(node);
       if (node[this.options.map.children] && node[this.options.map.children].length)
         Array.prototype.push.apply(selections, this.filterSelections(node[this.options.map.children]));
     });
@@ -123,14 +123,18 @@ export class TreeViewComponent implements OnInit {
       });
     }
     else {
-      if (node.$selected) goingGroupResult =  GroupSelection.All;
+      if (node[this.options.map.children]) {
+        if (!node[this.options.map.children].length)
+          goingGroupResult = GroupSelection.None
+      }
+      else if (node.$selected)
+        goingGroupResult =  GroupSelection.All;
       else goingGroupResult =  GroupSelection.None;
     }
     return goingGroupResult;
   }
   select(node, $event) {
-    if (!node[this.options.map.children] || this.options.select==='all')
-      node.$selected = !node.$selected;
+    node.$selected = !node.$selected;
     var selections = this.filterSelections();
     this.selectionChange.emit(selections);
   }
