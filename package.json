@@ -1,6 +1,6 @@
 {
   "name": "@guscrawford/ngx-tree-view",
-  "version": "0.0.12",
+  "version": "0.0.121",
   "description": "Yet another published reusable Angular tree-view component. (Hopefully the last)",
   "main": "index.js",
   "scripts": {

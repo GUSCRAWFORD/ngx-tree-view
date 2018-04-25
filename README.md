@@ -120,6 +120,7 @@ export class AppComponent {
     expanded:1                // By default open the tree-view <expanded> levels deep
   }
 }
+```
 
 ## Customize the Node Template
 
@@ -230,3 +231,4 @@ export class AppComponent {
       })
   }
 }
+```
