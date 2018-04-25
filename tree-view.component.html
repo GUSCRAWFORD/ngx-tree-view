@@ -12,9 +12,14 @@
                 <span class="{{options&&options.glyphs&&options.glyphs.fontLibrary&&(node.$glyph||options.glyphs.childGlpyh)?options.fontLibrary+' '+(node && node.$glpyh?node.$glyph:options.glyphs.childGlpyh):'tree-view-child'}}"></span>
               </span>
             </div>
-              <input type="checkbox" [hidden]="!options.select" [checked]="(node && node.$selected) || (options.select==='leaves'?groupIsSelected(node)===GroupSelection.All:false)" (click)="checkboxClick(node, i, $event);" [indeterminate]="options.select==='leaves'?groupIsSelected(node)===GroupSelection.Some:null" #checkbox>
+            <input type="checkbox" [hidden]="!options.select" [checked]="(node && node.$selected) || (options.select==='leaves'?groupIsSelected(node)===GroupSelection.All:false)" (click)="checkboxClick(node, i, $event);" [indeterminate]="options.select==='leaves'?groupIsSelected(node)===GroupSelection.Some:null" #checkbox>
+            <ng-container *ngIf="!template">
               {{node && node[options.map.value]}}
-            <tree-view *ngIf="node && node[options.map.children]" [nodes]="node[options.map.children]" [hidden]="!node.$expanded" [options]="options" (selectionChange)="onChildrenSelected($event)" (expansionChange)="onChildrenExpanded($event)" [depth]="depth+1"></tree-view>
+            </ng-container>
+            <ng-container *ngIf="template">
+              <ng-container *ngTemplateOutlet="template;context:{node:node,options:options}"></ng-container>
+            </ng-container>
+            <tree-view *ngIf="node && node[options.map.children]" [nodes]="node[options.map.children]" [hidden]="!node.$expanded" [options]="options" (selectionChange)="onChildrenSelected($event)" (expansionChange)="onChildrenExpanded($event)" [depth]="depth+1" [template]="template"></tree-view>
         </div>
   </div>
 </div>
