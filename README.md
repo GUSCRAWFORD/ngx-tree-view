@@ -216,7 +216,7 @@ export class AppComponent {
       return Observable.of([
         {name:'Ontario'},
         {name:'Quebec'}
-      ]);    if (country === 'Canada')
+      ]);
     if (country === 'Mexico')
       return Observable.of([
           {name:'Chihuahua'},
