@@ -47,7 +47,7 @@ export class AppComponent {
           name:'USA',
           children:[
             {name:'Alabama'},
-            {name:'Wisconcin'}
+            {name:'Wisconsin'}
           ]
         },
         {name:'Canada'},
@@ -71,19 +71,20 @@ export class AppComponent {
 **app.component.html**
 
 ```
-<tree-view [nodes]="data" [options]="options"></tree-view>
+<tree-view [nodes]="data" [options]="options" (selectionChange)="selections = $event"></tree-view>
 ```
 
 ** app.component.ts**
 
 ```
-import { TreeViewModule, TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ngx-tree-view';
+import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ngx-tree-view';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  selections;
   data = [
     {
       name:'North America',
@@ -92,7 +93,7 @@ export class AppComponent {
           name:'USA',
           children:[
             {name:'Alabama'},
-            {name:'Wisconcin'}
+            {name:'Wisconsin'}
           ]
         },
         {name:'Canada'},
@@ -109,7 +110,7 @@ export class AppComponent {
     {name:'Antarctica'}
   ];
   options =  {
-    select:'leaves', // Only reflect selected child notes, ('all' selects any, null hides the checkbox)
+    select:'leaves', // Only reflect selected childless nodes, ('all' selects any, null hides the checkbox)
     glyphs:TREE_VIEW_GLYPH_CONFIGS.fontAwesomeCarets // A default selection of font-awesome carets
     map: {
       children:'children',    // The property to enumerate children on
@@ -148,7 +149,7 @@ export class AppComponent {
           name:'USA',
           children:[
             {name:'Alabama'},
-            {name:'Wisconcin'}
+            {name:'Wisconsin'}
           ]
         },
         {name:'Canada'},
@@ -166,3 +167,66 @@ export class AppComponent {
   ];
 }
 ```
+
+## Update Asynchronously
+
+**app.component.html**
+
+```
+<tree-view [nodes]="data" (expansionChange)="onExpand($event)"></tree-view>
+```
+
+** app.component.ts**
+
+```
+import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ngx-tree-view';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  data = [
+    {
+      name:'North America',
+      children:[
+        {
+          name:'USA',
+          children:[
+            {name:'Alabama'},
+            {name:'Wisconsin'}
+          ]
+        },
+        {name:'Canada', children:[]},
+        {name:'Mexico', children:[]}
+      ]
+    },
+    {
+      name:'Europe',
+      children:[
+        {name:'Germany'},
+        {name:'France'}
+      ]
+    },
+    {name:'Antarctica'}
+  ];
+  statesOrProvinces(country) {
+    if (country === 'Canada')
+      return Observable.of([
+        {name:'Ontario'},
+        {name:'Quebec'}
+      ]);    if (country === 'Canada')
+    if (country === 'Mexico')
+      return Observable.of([
+          {name:'Chihuahua'},
+          {name:'Durango'}
+        ]);
+    return Observable.onErrorResumeNext();
+  }
+  onExpand($event) {
+    if($event.$expanded && !$event.children.length)
+      this.statesOrProvinces($event.name).subscribe(statesOrProv=>{
+        $event.children = statesOrProv;
+      })
+  }
+}
