@@ -19,7 +19,7 @@
             <ng-container *ngIf="template">
               <ng-container *ngTemplateOutlet="template;context:{node:node,options:options}"></ng-container>
             </ng-container>
-            <tree-view *ngIf="node && node[options.map.children]" [nodes]="node[options.map.children]" [hidden]="!node.$expanded" [options]="options" (selectionChange)="onChildrenSelected($event)" (expansionChange)="onChildrenExpanded($event)" [depth]="depth+1" [template]="template"></tree-view>
+            <tree-view *ngIf="node && node[options.map.children]" [nodes]="node[options.map.children]" [hidden]="!node.$expanded" [options]="options" (selectionChange)="onChildrenSelected($event)" (expansionChange)="onChildrenExpanded($event)" [depth]="depth+1" [template]="template" [root]="false"></tree-view>
         </div>
   </div>
 </div>
