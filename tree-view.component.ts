@@ -182,7 +182,7 @@ export class TreeViewComponent implements OnChanges {
         node.$expanded = true;
       });
     }
-    this.scaffoldMetadata();
+    //this.scaffoldMetadata();
   }
   scaffoldMetadata() {
     if (this.root) {
