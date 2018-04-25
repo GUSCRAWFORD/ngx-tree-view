@@ -2,11 +2,11 @@
 Yet another published reusable Angular tree-view component. (Hopefully the last)
 
 ## Install & Import to Your Main Module
-`npm install ngx-tree-view`
+`npm install @guscrawford.com/ngx-tree-view`
 
 **app.module.js**
 ```
-import { TreeViewModule } from '@guscrawford/ngx-tree-view';
+import { TreeViewModule } from '@guscrawford.com/ngx-tree-view';
 @NgModule({
   declarations: [
     AppComponent,
