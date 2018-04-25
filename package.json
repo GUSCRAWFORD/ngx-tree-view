@@ -1,5 +1,5 @@
 {
-  "name": "@guscrawford/ngx-tree-view",
+  "name": "@guscrawford.com/ng-tree-view",
   "version": "0.1.3",
   "description": "Yet another published reusable Angular tree-view component. (Hopefully the last)",
   "main": "index.js",
