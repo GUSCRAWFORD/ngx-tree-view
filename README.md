@@ -2,11 +2,11 @@
 Yet another published reusable Angular tree-view component. (Hopefully the last)
 
 ## Install & Import to Your Main Module
-`npm install @guscrawford.com/ngx-tree-view`
+`npm install @guscrawford.com/ng-tree-view`
 
 **app.module.js**
 ```
-import { TreeViewModule } from '@guscrawford.com/ngx-tree-view';
+import { TreeViewModule } from '@guscrawford.com/ng-tree-view';
 @NgModule({
   declarations: [
     AppComponent,
@@ -77,7 +77,7 @@ export class AppComponent {
 **app.component.ts**
 
 ```
-import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ngx-tree-view';
+import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ng-tree-view';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -180,7 +180,7 @@ export class AppComponent {
 **app.component.ts**
 
 ```
-import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ngx-tree-view';
+import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ng-tree-view';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
