@@ -128,7 +128,7 @@ export class AppComponent {
 
 ```
 <tree-view [nodes]="data" [template]="myCustomTreeNode"></tree-view>
-<ng-template #myCustomTreeNode>
+<ng-template #myCustomTreeNode set-node="node" set-options="options">
   {{node[options.map.value]}}!!!
 <ng-template>
 ```
@@ -187,6 +187,12 @@ import { TREE_VIEW_GLYPH_CONFIGS } from '@guscrawford/ng-tree-view';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  onExpand($event) {
+    if($event.$expanded && !$event.children.length)
+      this.statesOrProvinces($event.name).subscribe(statesOrProv=>{
+        $event.children = statesOrProv;
+      })
+  }
   data = [
     {
       name:'North America',
@@ -223,12 +229,6 @@ export class AppComponent {
           {name:'Durango'}
         ]);
     return Observable.onErrorResumeNext();
-  }
-  onExpand($event) {
-    if($event.$expanded && !$event.children.length)
-      this.statesOrProvinces($event.name).subscribe(statesOrProv=>{
-        $event.children = statesOrProv;
-      })
   }
 }
 ```
