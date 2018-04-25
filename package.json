@@ -1,7 +1,7 @@
 {
   "name": "@guscrawford/ngx-tree-view",
-  "version": "0.0.1",
-  "description": "Yet another ",
+  "version": "0.0.11",
+  "description": "Yet another published reusable Angular tree-view component. (Hopefully the last)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
