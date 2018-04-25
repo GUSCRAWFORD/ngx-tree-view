@@ -26,11 +26,21 @@ export const TREE_VIEW_GLYPH_CONFIGS = {
     fontLibrary:'fa',
     expandGlyph:'fa-caret-right',
     collapseGlyph:'fa-caret-down'
+  },
+  glpyhIconsPlusMinus: {
+    fontLibrary:'glyphicon',
+    expandGlyph:'glyphicon-plus',
+    collapseGlyph:'glyphicon-minus'
+  },
+  glpyhIconsCarets: {
+    fontLibrary:'glyphicon',
+    expandGlyph:'glyphicon-triangle-right',
+    collapseGlyph:'glyphicon-triangle-bottom'
   }
 }
 export class TreeViewOptions {
   select?:'leaves'|'all';
-  glyphs:TreeViewGlyphConfig = TREE_VIEW_GLYPH_CONFIGS.fontAwesomeSquareO;
+  glyphs:TreeViewGlyphConfig = TREE_VIEW_GLYPH_CONFIGS.fontAwesomeCarets;
   map:TreeViewDataMap = {
     children:'children',
     value:'name'
@@ -67,7 +77,8 @@ export class TreeViewComponent implements OnInit {
   expansionChange = new EventEmitter<any[]>();
   @Input()
   options: TreeViewOptions = new TreeViewOptions();
-
+  @Input()
+  template:TemplateRef<any>;
   @Input()
   depth: number = 0;
 
