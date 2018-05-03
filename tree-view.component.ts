@@ -5,53 +5,7 @@ import {
   ViewChild, TemplateRef, ViewChildren,
   ChangeDetectorRef
 } from '@angular/core';
-export class TreeViewDataMap {
-  key?:string = 'id';
-  children:string = 'children';
-  value:string = 'value';
-}
-export class TreeViewGlyphConfig {
-  fontLibrary: string;
-  expandGlyph?: string;
-  collapseGlyph?: string;
-  childGlyph?: string;
-}
-export const TREE_VIEW_GLYPH_CONFIGS = {
-  fontAwesomeSquareO: {
-    fontLibrary:'fa',
-    expandGlyph:'fa-plus-square-o',
-    collapseGlyph:'fa-minus-square-o'
-  },
-  fontAwesomeCarets: {
-    fontLibrary:'fa',
-    expandGlyph:'fa-caret-right',
-    collapseGlyph:'fa-caret-down'
-  },
-  glpyhIconsPlusMinus: {
-    fontLibrary:'glyphicon',
-    expandGlyph:'glyphicon-plus',
-    collapseGlyph:'glyphicon-minus'
-  },
-  glpyhIconsCarets: {
-    fontLibrary:'glyphicon',
-    expandGlyph:'glyphicon-triangle-right',
-    collapseGlyph:'glyphicon-triangle-bottom'
-  }
-}
-export class TreeViewOptions {
-  select?:'leaves'|'all';
-  glyphs:TreeViewGlyphConfig = TREE_VIEW_GLYPH_CONFIGS.fontAwesomeCarets;
-  map:TreeViewDataMap = {
-    children:'children',
-    value:'name'
-  };
-  expanded?:number = 0;
-}
-export enum GroupSelection {
-  None,
-  All,
-  Some
-}
+
 @Component({
   selector: 'tree-view',
   templateUrl: './tree-view.component.html',
@@ -85,20 +39,33 @@ export class TreeViewComponent implements OnChanges {
   depth: number = 0;
   @Input()
   root = true;
-
+  @Input()
+  disabled = false;
   selectAll(nodes, val = true) {
     if (!nodes) nodes = this.nodes;
     nodes.forEach(node=>{
-      node.$selected = val;
-      if (node && node[this.options.map.children] && node[this.options.map.children].length)
+      node.$treenode.$selected = val;
+      if (node && node[this.options.map.children] && node[this.options.map.children].length && this.options.select!=='all')
         this.selectAll(node[this.options.map.children], val);
     });
+  }
+  checked (node) {
+    if (node[this.options.map.children] && this.options.select==='leaves')
+      return this.groupIsSelected(node)===GroupSelection.All;
+    else
+      return node && !!node.$treenode.$selected;
+  }
+  indeterminate (node) {
+    if (node[this.options.map.children])
+      return this.options.select==='leaves'?this.groupIsSelected(node)===GroupSelection.Some:null;
+    return null;
   }
   filterSelections(nodes=null) {
     var selections = [];
     if (!nodes) nodes = this.nodes;
     nodes.forEach(node=>{
-      if (node.$selected && (this.options.select==='all' || !node[this.options.map.children])) selections.push(node);
+      if (!node.$treenode) node.$treenode = {};
+      if (node.$treenode.$selected && (this.options.select==='all' || this.options.select==='all-cascading' || !node[this.options.map.children])) selections.push(node);
       if (node[this.options.map.children] && node[this.options.map.children].length)
         Array.prototype.push.apply(selections, this.filterSelections(node[this.options.map.children]));
     });
@@ -106,7 +73,7 @@ export class TreeViewComponent implements OnChanges {
   }
   groupIsSelected(node) : GroupSelection {
     var goingGroupResult = -1, childrenNodesAreSelected;
-    if (!node) return GroupSelection.None;
+    if (!node) return GroupSelection.Empty;
     if (node && node[this.options.map.children] && node[this.options.map.children].length) {
       node[this.options.map.children].forEach(child=>{
         childrenNodesAreSelected = this.groupIsSelected(child);
@@ -129,22 +96,27 @@ export class TreeViewComponent implements OnChanges {
     else {
       if (node[this.options.map.children]) {
         if (!node[this.options.map.children].length)
-          goingGroupResult = GroupSelection.None
+          goingGroupResult = GroupSelection.Empty
       }
-      else if (node.$selected)
+      else if (node.$treenode.$selected)
         goingGroupResult =  GroupSelection.All;
       else goingGroupResult =  GroupSelection.None;
     }
     return goingGroupResult;
   }
-  select(node, $event) {
-    node.$selected = !node.$selected;
-    var selections = this.filterSelections();
-    this.selectionChange.emit(selections);
+  select(node) {
+    if (node[this.options.map.children] && (this.options.select==='leaves' || this.options.select==='all-cascading')) {
+      this.selectAll(node[this.options.map.children], this.options.select==='leaves'?this.groupIsSelected(node)!==GroupSelection.All:!node.$treenode.$selected);
+    }
+    //var selections = this.filterSelections();
+
+    node.$treenode.$selected = !node.$treenode.$selected;
+    this.selectionChange.emit(this.root?this.filterSelections():[node]);
   }
-  expand(node, $event) {
+  expand(node) {
     if (node[this.options.map.children]) {
-      node.$expanded = !node.$expanded;
+      node.$treenode.$expanded = !node.$treenode.$expanded;
+      this.onChildrenSelected([node])
       this.expansionChange.emit(node);
       return true;
     } return false;
@@ -152,23 +124,26 @@ export class TreeViewComponent implements OnChanges {
   onChildrenExpanded(node) {
     this.expansionChange.emit(node);
   }
-  onChildrenSelected($event) {
-    if (this.root)
-      this.selectionChange.emit(this.filterSelections());
-    else this.selectionChange.emit($event);
+  onChildrenSelected(nodes) {
+    var node = nodes[0];
+    if (node && this.options.select==='all-cascading') {
+      var parentNode = this.nodes.find(n=>n.children&&n.children.find(cn=>cn===node));
+      if (parentNode) {
+        parentNode.$treenode.$selected = this.groupIsSelected(parentNode) > GroupSelection.None;
+        nodes.unshift(parentNode);
+      }
+    }
+    return this.selectionChange.emit(this.root?this.filterSelections():nodes)
   }
-  nodeClick(node, $event) {
-    if (!this.expand(node, $event))
-      this.select(node, $event);
+  handleClick(node, $event) {
+    if (!this.expand(node))
+      this.select(node);
     $event.cancelBubble = true;
   }
 
-  checkboxClick(node, index, $event) {
+  checkboxClick(node, $event, checkbox) {
     $event.cancelBubble = true;
-    if (node[this.options.map.children] && this.options.select==='leaves') {
-      this.selectAll(node[this.options.map.children], !node.$selected);
-    }
-    this.select(node, $event);
+    this.select(node);
   }
 
   ngOnChanges() {
@@ -176,13 +151,22 @@ export class TreeViewComponent implements OnChanges {
       children:'children',
       value:'name'
     }
-
     if (this.options.expanded && this.depth < this.options.expanded) {
       this.nodes.forEach(node=>{
-        node.$expanded = true;
+        node.$treenode.$expanded = true;
       });
     }
+    this.nodes.forEach(n=>this.setMetadata(n, {}));
     //this.scaffoldMetadata();
+  }
+  setMetadata(node, metadata) {
+    if (metadata)
+      node.$treenode = metadata;
+    else delete node.$treenode;
+    if (node[this.options.map.children] instanceof Array)
+      node[this.options.map.children].forEach(n=>{
+        this.setMetadata(n, JSON.parse(JSON.stringify(metadata)));
+      });
   }
   scaffoldMetadata() {
     if (this.root) {
@@ -200,4 +184,57 @@ export class TreeViewComponent implements OnChanges {
       });
     }
   }
+}
+export class TreeViewDataMap {
+  key?:string = 'id';
+  children:string = 'children';
+  value:string = 'value';
+}
+export class TreeViewPagingConfig {
+  perPage:number = 25;
+}
+export class TreeViewGlyphConfig {
+  fontLibrary: string;
+  expandGlyph?: string;
+  collapseGlyph?: string;
+  childGlyph?: string;
+}
+export const TREE_VIEW_GLYPH_CONFIGS = {
+  fontAwesomeSquareO: {
+    fontLibrary:'fa',
+    expandGlyph:'fa-plus-square-o',
+    collapseGlyph:'fa-minus-square-o'
+  },
+  fontAwesomeCarets: {
+    fontLibrary:'fa',
+    expandGlyph:'fa-caret-right',
+    collapseGlyph:'fa-caret-down'
+  },
+  glpyhIconsPlusMinus: {
+    fontLibrary:'glyphicon',
+    expandGlyph:'glyphicon-plus',
+    collapseGlyph:'glyphicon-minus'
+  },
+  glpyhIconsCarets: {
+    fontLibrary:'glyphicon',
+    expandGlyph:'glyphicon-triangle-right',
+    collapseGlyph:'glyphicon-triangle-bottom'
+  }
+}
+export class TreeViewOptions {
+  select?:'leaves'|'all'|'all-cascading'='all-cascading';
+  checkbox?:boolean=true;
+  glyphs:TreeViewGlyphConfig = TREE_VIEW_GLYPH_CONFIGS.fontAwesomeCarets;
+  map:TreeViewDataMap = {
+    children:'children',
+    value:'name'
+  };
+  expanded?:number = 0;
+  paging?:TreeViewPagingConfig = null;
+}
+export enum GroupSelection {
+  None,
+  All,
+  Some,
+  Empty
 }
