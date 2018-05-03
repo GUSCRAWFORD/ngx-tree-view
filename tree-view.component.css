@@ -2,6 +2,11 @@
 .tree-view {
     cursor: pointer;
 }
+/* .tree-view .tree-view * {
+
+    max-height:100px;
+    overflow: auto;
+} */
 .tree-view .node-text {
 
     cursor: pointer;
@@ -37,4 +42,21 @@
 }
 .tree-view .node-handle .tree-view-child:before {
     content: " ";
+}
+/* .tree-view .tree-view-too-many-children {
+    float:right;
+    font-size: smaller;
+} */
+.tree-view .tree-view-node {
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    transition: all 0.30s ease-in-out;
+    border: 1px solid rgba(0, 122, 255, 0);
+}
+   
+.tree-view .tree-view-node.focus {
+    box-shadow: 0 1px 5px rgba(0, 122, 255, 1);
+    border: 1px solid rgba(0, 122, 255, 1);
 }

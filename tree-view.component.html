@@ -1,26 +1,42 @@
 <div>
-  <div *ngFor="let node of nodes; index as i">
-      <div class="tree-view" (click)="nodeClick(node, $event)">
-          <div class="node-handle">
-            <span [hidden]="!(node && node[options.map.children] && !node.$expanded)">
+  <div *ngFor="let node of nodes; index as i" [title]="'√:'+checked(node)+' ?:'+indeterminate(node)+' g:'+GroupSelection[groupIsSelected(node)]+' $s:'+node.$treenode.$selected">
+      <div class="tree-view">
+        
+          <div class="node-handle" (click)="handleClick(node, $event)">
+            <span [hidden]="!(node && node[options.map.children] && node.$treenode && !node.$treenode.$expanded)">
               <span class="{{(options&&options.glyphs&&options.glyphs.fontLibrary&&options.glyphs.expandGlyph)?(options.glyphs.fontLibrary+' '+options.glyphs.expandGlyph):'tree-view-expand '}}"></span>
             </span>
-            <span [hidden]="!(node && node[options.map.children] && node.$expanded)">
+            <span [hidden]="!(node && node[options.map.children] && node.$treenode && node.$treenode.$expanded)">
               <span class="{{(options&&options.glyphs&&options.glyphs.fontLibrary&&options.glyphs.collapseGlyph)?(options.glyphs.fontLibrary+' '+options.glyphs.collapseGlyph):'tree-view-collapse'}}"></span>
             </span>
             <span [hidden]="!(node && !node[options.map.children])">
               <span class="{{options&&options.glyphs&&options.glyphs.fontLibrary&&(node.$glyph||options.glyphs.childGlpyh)?options.fontLibrary+' '+(node && node.$glpyh?node.$glyph:options.glyphs.childGlpyh):'tree-view-child'}}"></span>
             </span>
           </div>
-          <input type="checkbox" [hidden]="!options.select" [checked]="(node && node.$selected) || (options.select==='leaves'?groupIsSelected(node)===GroupSelection.All:false)" (click)="checkboxClick(node, i, $event);" [indeterminate]="options.select==='leaves'?groupIsSelected(node)===GroupSelection.Some:null" #checkbox>
-
+          <input type="checkbox" [hidden]="!options.checkbox" [attr.disabled]="disabled||(options.select === 'leaves'&&groupIsSelected(node)===GroupSelection.Empty)||null"
+            [checked]="checked(node)" [indeterminate]="indeterminate(node)"
+            (change)="checkboxClick(node, $event);" #checkbox>
+        
+          <span class="tree-view-node" [ngClass]="{focus:node.$treenode.$selected&&!options.checkbox}" (click)="checkboxClick(node, $event);">
             <ng-container *ngIf="!template">
               {{node && node[options.map.value]}}
             </ng-container>
             <ng-container *ngIf="template">
               <ng-container *ngTemplateOutlet="template;context:{node:node,options:options}"></ng-container>
             </ng-container>
-          <tree-view *ngIf="node && node[options.map.children]" [nodes]="node[options.map.children]" [hidden]="!node.$expanded" [options]="options" (selectionChange)="onChildrenSelected($event)" (expansionChange)="onChildrenExpanded($event)" [depth]="depth+1" [template]="template" [root]="false"></tree-view>
+          </span>
+          <!-- <span class="tree-view-too-many-children" [hidden]="!(options.paging && node && node[options.map.children] && node[options.map.children].length > options.paging.perPage)">
+            Showing {{options.paging.perPage}} of {{node && node[options.map.children] && node[options.map.children].length}} items on page {{(node.$treenode.$page || 0) +1}}
+            <a (click)="node.$treenode.$page = node.$treenode.$page - 1;">Back</a>
+            <a (click)="node.$treenode.$page = node.$treenode.$page + 1;">Next</a>
+          </span> -->
+          <tree-view *ngIf="node && node[options.map.children]"
+            [nodes]="node[options.map.children]"
+            [hidden]="!node.$treenode.$expanded"
+            [options]="options"
+            (selectionChange)="onChildrenSelected($event)"
+            (expansionChange)="onChildrenExpanded($event)"
+            [depth]="depth+1" [template]="template" [root]="false" [disabled]="disabled"></tree-view>
       </div>
   </div>
 </div>
