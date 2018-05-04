@@ -1,6 +1,6 @@
 {
   "name": "@guscrawford.com/ng-tree-view",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Yet another published reusable Angular tree-view component. (Hopefully the last)",
   "main": "index.js",
   "scripts": {
