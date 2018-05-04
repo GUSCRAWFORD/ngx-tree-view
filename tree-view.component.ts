@@ -105,18 +105,14 @@ export class TreeViewComponent implements OnChanges {
     return goingGroupResult;
   }
   select(node) {
-    if (node[this.options.map.children] && (this.options.select==='leaves' || this.options.select==='all-cascading')) {
+    if (node[this.options.map.children] && (this.options.select==='leaves' || this.options.select==='all-cascading'))
       this.selectAll(node[this.options.map.children], this.options.select==='leaves'?this.groupIsSelected(node)!==GroupSelection.All:!node.$treenode.$selected);
-    }
-    //var selections = this.filterSelections();
-
     node.$treenode.$selected = !node.$treenode.$selected;
     this.selectionChange.emit(this.root?this.filterSelections():[node]);
   }
   expand(node) {
     if (node[this.options.map.children]) {
       node.$treenode.$expanded = !node.$treenode.$expanded;
-      this.onChildrenSelected([node])
       this.expansionChange.emit(node);
       return true;
     } return false;
@@ -129,7 +125,8 @@ export class TreeViewComponent implements OnChanges {
     if (node && this.options.select==='all-cascading') {
       var parentNode = this.nodes.find(n=>n.children&&n.children.find(cn=>cn===node));
       if (parentNode) {
-        parentNode.$treenode.$selected = this.groupIsSelected(parentNode) > GroupSelection.None;
+        var sel = this.groupIsSelected(parentNode);
+        parentNode.$treenode.$selected =  sel && sel < GroupSelection.Empty;
         nodes.unshift(parentNode);
       }
     }
@@ -157,7 +154,7 @@ export class TreeViewComponent implements OnChanges {
       });
     }
     this.nodes.forEach(n=>this.setMetadata(n, {}));
-    //this.scaffoldMetadata();
+
   }
   setMetadata(node, metadata) {
     if (metadata)
@@ -167,22 +164,6 @@ export class TreeViewComponent implements OnChanges {
       node[this.options.map.children].forEach(n=>{
         this.setMetadata(n, JSON.parse(JSON.stringify(metadata)));
       });
-  }
-  scaffoldMetadata() {
-    if (this.root) {
-      this.metadata = {};
-      var scaffoldMetadata = (node, metadataNode, index, depth)=>{
-        metadataNode[depth+'.'+index] = {};
-        if (node[this.options.map.children]) {
-          node[this.options.map.children].forEach((childNode, i)=>{
-            scaffoldMetadata(childNode, metadataNode, i, depth+1);
-          });
-        }
-      };
-      this.nodes.forEach((node, i)=>{
-        scaffoldMetadata(node, this.metadata, i, this.depth);
-      });
-    }
   }
 }
 export class TreeViewDataMap {
